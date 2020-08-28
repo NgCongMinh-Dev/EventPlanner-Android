@@ -11,6 +11,7 @@
 *.class
 
 # Generated files
+.DS_Store
 bin/
 gen/
 out/
@@ -38,6 +39,7 @@ captures/
 
 # IntelliJ
 *.iml
+.idea
 .idea/workspace.xml
 .idea/tasks.xml
 .idea/gradle.xml
