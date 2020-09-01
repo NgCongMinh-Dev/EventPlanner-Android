@@ -1,5 +1,6 @@
-package com.htw.project.eventplanner.activity;
+package com.htw.project.eventplanner.ViewController.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +24,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         bindView();
-
     }
 
     private void bindView() {
@@ -38,8 +38,14 @@ public class LoginActivity extends AppCompatActivity {
                 String password = passwordEditText.getText().toString();
 
                 System.err.println(username + " " + password);
+                switchToMainActivity();
             }
         });
+    }
+
+    private void switchToMainActivity(){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
 }
