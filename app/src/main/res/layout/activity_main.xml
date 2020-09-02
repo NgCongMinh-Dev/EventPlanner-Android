@@ -6,39 +6,29 @@
     android:orientation="vertical">
 
     <!-- Toolbar -->
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/grey"
+        android:minHeight="?attr/actionBarSize">
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
-            android:background="@color/cardview_dark_background">
+            android:layout_gravity="center" />
 
-            <TextView
-                android:id="@+id/toolbar_title"
-                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+        <ImageButton
+            android:id="@+id/toolbar_action_button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="end"
+            android:layout_marginRight="10dp"
+            android:background="@color/grey" />
 
-            <RelativeLayout
-                android:id="@+id/toolbar_action_container"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="end"
-                android:gravity="center_vertical"
-                android:paddingEnd="10dp"
-                android:paddingRight="10dp">
-
-                <com.htw.project.eventplanner.View.FontAwesome
-                    android:id="@+id/toolbar_action_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="25sp"
-                    android:text="&#xf007;"/>
-
-            </RelativeLayout>
-
-        </androidx.appcompat.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
     <!-- Fragment Container -->
 

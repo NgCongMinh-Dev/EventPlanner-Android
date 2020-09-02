@@ -45,6 +45,7 @@ public abstract class AbstractFragment extends Fragment {
         super.onStop();
 
         fragmentChangeListener = null;
+        actionBarController.resetToolbar();
     }
 
     protected void changeFragment(AbstractFragment fragment) {

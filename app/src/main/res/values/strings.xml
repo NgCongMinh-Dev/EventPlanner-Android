@@ -7,4 +7,11 @@
     <string name="action_login">Login</string>
 
     <string name="welcome">"Welcome !"</string>
+
+    <!-- fragment title -->
+    <string name="title_conversation_group_detail">Group Info</string>
+    <string name="title_event_planner">Event Planner</string>
+    <string name="title_task_add">Add Task</string>
+    <string name="title_task_update">Update Task</string>
+
 </resources>

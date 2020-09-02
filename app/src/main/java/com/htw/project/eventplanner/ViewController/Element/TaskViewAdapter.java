@@ -4,27 +4,30 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.htw.project.eventplanner.Model.Task;
+import com.htw.project.eventplanner.Model.TaskSection;
 import com.htw.project.eventplanner.R;
+import com.htw.project.eventplanner.Utils.DateTimeConverter;
 
-import java.util.List;
+import java.util.Date;
 
 public class TaskViewAdapter extends RecyclerView.Adapter<TaskViewAdapter.TaskViewHolder> {
 
     private LayoutInflater layoutInflater;
 
-    private List<Task> tasks;
+    private TaskSection taskSection;
 
     private View.OnClickListener listener;
 
-    public TaskViewAdapter(Context context, List<Task> tasks) {
+    public TaskViewAdapter(Context context, TaskSection taskSection) {
         this.layoutInflater = LayoutInflater.from(context);
-        this.tasks = tasks;
+        this.taskSection = taskSection;
     }
 
     @NonNull
@@ -36,15 +39,17 @@ public class TaskViewAdapter extends RecyclerView.Adapter<TaskViewAdapter.TaskVi
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        Task task = tasks.get(position);
+        Task task = taskSection.getTasks().get(position);
+
+        Date date = task.getDueDate();
 
         holder.title.setText(task.getTitle());
-        holder.date.setText(task.getDate());
+        holder.date.setText(date == null ? "TODAY" : DateTimeConverter.getDate(date));
     }
 
     @Override
     public int getItemCount() {
-        return tasks.size();
+        return taskSection.getTasks().size();
     }
 
     public void setOnClickListener(View.OnClickListener listener) {
@@ -53,15 +58,19 @@ public class TaskViewAdapter extends RecyclerView.Adapter<TaskViewAdapter.TaskVi
 
     public class TaskViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView title;
+        TextView title;
 
-        public TextView date;
+        TextView date;
+
+        LinearLayout iconContainer;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(listener);
-            this.title = itemView.findViewById(R.id.element_task_title);
-            this.date = itemView.findViewById(R.id.element_task_date);
+
+            title = itemView.findViewById(R.id.element_task_title);
+            date = itemView.findViewById(R.id.element_task_date);
+            iconContainer = itemView.findViewById(R.id.element_task_status_container);
         }
     }
 

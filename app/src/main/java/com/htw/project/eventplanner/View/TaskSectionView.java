@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.htw.project.eventplanner.R;
 import com.htw.project.eventplanner.Utils.ViewScaleConverter;
 
-public class TaskSection extends LinearLayout {
+public class TaskSectionView extends LinearLayout {
 
     private Bitmap iconExpandLess;
 
@@ -29,17 +29,17 @@ public class TaskSection extends LinearLayout {
 
     private RecyclerView taskContainer;
 
-    public TaskSection(Context context) {
+    public TaskSectionView(Context context) {
         super(context);
         init();
     }
 
-    public TaskSection(Context context, @Nullable AttributeSet attrs) {
+    public TaskSectionView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public TaskSection(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public TaskSectionView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -112,6 +112,10 @@ public class TaskSection extends LinearLayout {
 
     public void setSectionTitle(int resId) {
         headerTitle.setText(resId);
+    }
+
+    public void setSectionTitle(String title) {
+        headerTitle.setText(title);
     }
 
 }

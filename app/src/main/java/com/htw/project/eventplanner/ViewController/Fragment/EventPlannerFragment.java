@@ -9,13 +9,18 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.htw.project.eventplanner.Model.Task;
+import com.htw.project.eventplanner.Model.TaskSection;
 import com.htw.project.eventplanner.R;
+import com.htw.project.eventplanner.Utils.DateTimeConverter;
 import com.htw.project.eventplanner.Utils.ViewScaleConverter;
+import com.htw.project.eventplanner.View.ProgressBar;
 import com.htw.project.eventplanner.View.TabBar;
-import com.htw.project.eventplanner.View.TaskSection;
+import com.htw.project.eventplanner.View.TaskSectionView;
 import com.htw.project.eventplanner.ViewController.Element.TaskViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class EventPlannerFragment extends AbstractFragment {
@@ -30,6 +35,10 @@ public class EventPlannerFragment extends AbstractFragment {
 
     private LinearLayout container;
 
+    private List<TaskSectionView> taskSectionViewListCollector;
+
+    private List<TaskSectionView> taskSectionViewPersonCollector;
+
     @Override
     protected int getLayoutResourceId() {
         return R.layout.fragment_event_planner;
@@ -39,22 +48,60 @@ public class EventPlannerFragment extends AbstractFragment {
     public void onStart() {
         super.onStart();
 
-        TaskViewAdapter adapter = new TaskViewAdapter(getContext(), testData());
-        adapter.setOnClickListener(view -> Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show());
+        // initialize
+        taskSectionViewListCollector = new ArrayList<TaskSectionView>();
+        taskSectionViewPersonCollector = new ArrayList<TaskSectionView>();
+
+        actionBarController.setToolbarTitle(R.string.title_event_planner);
+        actionBarController.setToolbarAction(BitmapFactory.decodeResource(getResources(), R.mipmap.icon_add), () -> changeFragment(TaskFragment.newInstance()));
 
         container = getViewElement(getView(), R.id.event_planner_container);
 
-        TaskSection taskSection = new TaskSection(getContext());
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) taskSection.getLayoutParams();
-        params.setMargins(0, ViewScaleConverter.toDP(getContext(), 20), 0, 0);
-        taskSection.setLayoutParams(params);
+        // progress bar
+        ProgressBar progressBar = createProgressbar();
+        container.addView(progressBar);
 
-        RecyclerView sectionOneView = taskSection.getTaskContainer();
-        sectionOneView.setAdapter(adapter);
+        // task section
+        Arrays.asList(testDataList()).stream().forEach(taskSection -> {
+            TaskSectionView taskSectionView = createTaskSection(taskSection);
+            taskSectionViewListCollector.add(taskSectionView);
 
-        container.addView(taskSection);
+            container.addView(taskSectionView);
+        });
+
+        Arrays.asList(testDataPerson()).stream().forEach(taskSection -> {
+            TaskSectionView taskSectionView = createTaskSection(taskSection);
+            taskSectionViewPersonCollector.add(taskSectionView);
+
+        });
 
         // tab bar
+        initTabBar();
+    }
+
+    private ProgressBar createProgressbar() {
+        ProgressBar progressBar = new ProgressBar(getContext());
+        progressBar.setProgress(75f);
+        return progressBar;
+    }
+
+    private TaskSectionView createTaskSection(TaskSection taskSection) {
+        TaskViewAdapter adapter = new TaskViewAdapter(getContext(), taskSection);
+        adapter.setOnClickListener(view -> Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show());
+
+        TaskSectionView taskSectionView = new TaskSectionView(getContext());
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) taskSectionView.getLayoutParams();
+        params.setMargins(0, ViewScaleConverter.toDP(getContext(), 20), 0, 0);
+        taskSectionView.setLayoutParams(params);
+        taskSectionView.setSectionTitle(taskSection.getSectionTitle());
+
+        RecyclerView sectionOneView = taskSectionView.getTaskContainer();
+        sectionOneView.setAdapter(adapter);
+
+        return taskSectionView;
+    }
+
+    private void initTabBar() {
         TabBar tabBar = getViewElement(getView(), R.id.tab_container);
 
         TabBar.TabBarElement taskListViewElement = new TabBar.TabBarElement(tabBar.getContext());
@@ -62,7 +109,16 @@ public class EventPlannerFragment extends AbstractFragment {
         taskListViewElement.setOnClickListener(new TabBar.TabBarElementClickListener() {
             @Override
             protected void execute(View view) {
-                Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+                if (taskSectionViewListCollector.isEmpty()) {
+                    return;
+                }
+                taskSectionViewPersonCollector.stream().forEach(taskSectionView -> {
+                    container.removeView(taskSectionView);
+                });
+
+                taskSectionViewListCollector.stream().forEach(taskSectionView -> {
+                    container.addView(taskSectionView);
+                });
             }
         });
         tabBar.addView(taskListViewElement);
@@ -72,30 +128,63 @@ public class EventPlannerFragment extends AbstractFragment {
         taskPersonViewElement.setOnClickListener(new TabBar.TabBarElementClickListener() {
             @Override
             protected void execute(View view) {
-                Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+                if (taskSectionViewPersonCollector.isEmpty()) {
+                    return;
+                }
+                taskSectionViewListCollector.stream().forEach(taskSectionView -> {
+                    container.removeView(taskSectionView);
+                });
+
+                taskSectionViewPersonCollector.stream().forEach(taskSectionView -> {
+                    container.addView(taskSectionView);
+                });
             }
         });
         tabBar.addView(taskPersonViewElement);
-
-
-
     }
 
-    private List<Task> testData() {
+    private TaskSection testDataList() {
+        Date date = DateTimeConverter.getDate("02.09.2020");
+
         List<Task> tasks = new ArrayList<>();
 
         Task task1 = new Task();
         task1.setTitle("Einkaufen");
-        task1.setDate("10.10.10");
+        task1.setDueDate(date);
         tasks.add(task1);
 
         Task task2 = new Task();
         task2.setTitle("Kochen");
-        task2.setDate("10.10.10");
+        task2.setDueDate(date);
         tasks.add(task2);
 
-        return tasks;
+        TaskSection taskSection = new TaskSection();
+        taskSection.setSectionTitle("Pending");
+        taskSection.setTasks(tasks);
+
+        return taskSection;
     }
 
+    private TaskSection testDataPerson() {
+        Date date = DateTimeConverter.getDate("02.09.2020");
+
+        List<Task> tasks = new ArrayList<>();
+
+        Task task1 = new Task();
+        task1.setTitle("Einkaufen");
+        task1.setDueDate(date);
+        tasks.add(task1);
+
+        Task task2 = new Task();
+        task2.setTitle("Kochen");
+        task2.setDueDate(date);
+        tasks.add(task2);
+
+        TaskSection taskSection = new TaskSection();
+        taskSection.setSectionTitle("Person");
+        taskSection.setTasks(tasks);
+
+        return taskSection;
+    }
 
 }

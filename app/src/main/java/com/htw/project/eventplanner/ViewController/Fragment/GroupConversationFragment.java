@@ -25,6 +25,7 @@ public class GroupConversationFragment extends AbstractFragment {
         super.onStart();
 
         // actionbar
+        actionBarController.setToolbarTitle(R.string.title_conversation_group_detail);
 
         // register components
         View eventPlannerView = getViewElement(getView(), R.id.action_event_planner);

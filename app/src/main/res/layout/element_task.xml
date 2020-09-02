@@ -8,31 +8,26 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/border_black_stroke_white_background"
-        android:padding="10dp">
+        android:padding="5dp">
 
         <!-- status icon -->
         <LinearLayout
             android:id="@+id/element_task_status_container"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:gravity="center">
-
-            <com.htw.project.eventplanner.View.FontAwesome
-                android:id="@+id/element_task_status"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="&#xf007;"
-                android:textSize="60dp" />
-
-        </LinearLayout>
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:background="@mipmap/icon_check"
+            android:foreground="@drawable/border_black_round"
+            android:gravity="center"
+            android:orientation="horizontal" />
 
         <!-- information section -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_weight="1"
             android:orientation="vertical">

@@ -27,7 +27,11 @@ public class TabBar extends LinearLayout {
 
     private static final float ALPHA_SELECTED_STATE = 1f;
 
+    private static final Integer START_TAB_INDEX = new Integer(0);
+
     private Map<Integer, TabBarElement> elements;
+
+    private Integer activeTabIndex;
 
     public TabBar(Context context) {
         super(context);
@@ -46,6 +50,7 @@ public class TabBar extends LinearLayout {
 
     private void init() {
         elements = new HashMap<>();
+        activeTabIndex = 0;
 
         setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewScaleConverter.toDP(getContext(), TAB_BAR_HEIGHT)));
         setBackgroundColor(getResources().getColor(R.color.grey));
@@ -58,7 +63,6 @@ public class TabBar extends LinearLayout {
         if (!(child instanceof TabBarElement)) {
             return;
         }
-
         Integer index = new Integer(elements.size());
 
         TabBarElement element = (TabBarElement) child;
@@ -67,19 +71,26 @@ public class TabBar extends LinearLayout {
 
         elements.put(index, element);
 
+        if (index.equals(START_TAB_INDEX)) {
+            element.activate();
+        } else {
+            element.deactivate();
+        }
+
         super.addView(element);
     }
 
     private void notify(Integer index) {
         TabBarElement selectedElement = elements.get(index);
-        selectedElement.setAlpha(ALPHA_SELECTED_STATE);
+        selectedElement.activate();
 
         List<TabBarElement> nonSelectedElements = elements.entrySet().stream()
                 .filter(x -> x.getKey() != index)
                 .map(x -> x.getValue())
                 .collect(Collectors.toList());
 
-        nonSelectedElements.stream().forEach(x -> x.setAlpha(ALPHA_NON_SELECTED_STATE));
+        nonSelectedElements.stream().forEach(x -> x.deactivate());
+        activeTabIndex = index;
     }
 
     @SuppressLint("AppCompatCustomView")
@@ -111,6 +122,14 @@ public class TabBar extends LinearLayout {
             setBackgroundColor(getResources().getColor(R.color.grey));
         }
 
+        private void activate() {
+            setAlpha(ALPHA_SELECTED_STATE);
+        }
+
+        private void deactivate() {
+            setAlpha(ALPHA_NON_SELECTED_STATE);
+        }
+
     }
 
     public static abstract class TabBarElementClickListener implements OnClickListener {
@@ -125,6 +144,9 @@ public class TabBar extends LinearLayout {
             Integer index = element.index;
 
             TabBar tabBar = element.tabBar;
+            if (tabBar.activeTabIndex == index) {
+                return;
+            }
             tabBar.notify(index);
 
             execute(view);

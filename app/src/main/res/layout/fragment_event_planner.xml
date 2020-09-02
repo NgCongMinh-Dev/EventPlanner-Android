@@ -14,67 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
-
-            <!-- progress bar -->
-            <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="100"
-                android:paddingLeft="20dp"
-                android:paddingTop="10dp"
-                android:paddingRight="20dp"
-                android:paddingBottom="10dp"
-                android:progress="60"
-                android:scaleY="5" />
-
-            <!--
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/grey"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:id="@+id/event_planner_section_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Section"
-                        android:textColor="@color/black"
-                        android:textSize="20dp"
-                        android:textStyle="bold" />
-
-                    <ImageButton
-                        android:id="@+id/event_planner_section_expand_icon"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginLeft="10dp"
-                        android:background="@color/grey"
-                        android:gravity="center"
-                        android:src="@mipmap/icon_expand_more" />
-
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/event_planner_section_one"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp" />
-
-            </LinearLayout>
-            -->
-
-        </LinearLayout>
+            android:orientation="vertical" />
 
     </ScrollView>
 
@@ -82,36 +22,6 @@
         android:id="@+id/tab_container"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="true"/>
-
-    <!--
-    <LinearLayout
-        android:id="@+id/tab_container"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/grey"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/grey"
-            android:gravity="center"
-            android:src="@mipmap/icon_task_list" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/grey"
-            android:gravity="center"
-            android:src="@mipmap/icon_task_person"
-            android:alpha="0.3"/>
-
-    </LinearLayout>
-    -->
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
