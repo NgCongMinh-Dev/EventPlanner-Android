@@ -1,12 +1,18 @@
 package com.htw.project.eventplanner.Business;
 
+import com.htw.project.eventplanner.Rest.MoshiFactory;
 import com.htw.project.eventplanner.Rest.RestClientFactory;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public abstract class ApiBusiness {
+
+    protected final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
 
     protected enum HttpMethod {
         POST, PUT, DELETE, GET;
@@ -52,6 +58,11 @@ public abstract class ApiBusiness {
 
     protected Request buildDeleteRequest(String server, String url) {
         return buildRequest(server, url, null, HttpMethod.DELETE);
+    }
+
+    protected <ENTITY> JsonAdapter<ENTITY> getAdapter(Class<ENTITY> clazz) {
+        Moshi moshi = MoshiFactory.create();
+        return moshi.adapter(clazz);
     }
 
 }

@@ -8,6 +8,9 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.htw.project.eventplanner.Business.UserInfoProvider;
+import com.htw.project.eventplanner.Model.Event;
+import com.htw.project.eventplanner.Model.GroupConversation;
 import com.htw.project.eventplanner.Model.Task;
 import com.htw.project.eventplanner.Model.TaskSection;
 import com.htw.project.eventplanner.R;
@@ -25,18 +28,24 @@ import java.util.List;
 
 public class EventPlannerFragment extends AbstractFragment {
 
-    public static EventPlannerFragment newInstance() {
+    private static final String BUNDLE_ARG_GROUP_CONVERSATION = "bundle_arg_group_conversation";
+    private static final String BUNDLE_ARG_EVENT = "bundle_arg_event";
+
+    public static EventPlannerFragment newInstance(GroupConversation groupConversation, Event event) {
         Bundle args = new Bundle();
+        args.putParcelable(BUNDLE_ARG_GROUP_CONVERSATION, groupConversation);
+        args.putParcelable(BUNDLE_ARG_EVENT, event);
 
         EventPlannerFragment fragment = new EventPlannerFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
+    private GroupConversation groupConversation;
+    private Event event;
+
     private LinearLayout container;
-
     private List<TaskSectionView> taskSectionViewListCollector;
-
     private List<TaskSectionView> taskSectionViewPersonCollector;
 
     @Override
@@ -49,11 +58,18 @@ public class EventPlannerFragment extends AbstractFragment {
         super.onStart();
 
         // initialize
-        taskSectionViewListCollector = new ArrayList<TaskSectionView>();
-        taskSectionViewPersonCollector = new ArrayList<TaskSectionView>();
+        Bundle bundle = getArguments();
+        groupConversation = bundle.getParcelable(BUNDLE_ARG_GROUP_CONVERSATION);
+        event = bundle.getParcelable(BUNDLE_ARG_EVENT);
+
+        taskSectionViewListCollector = new ArrayList<>();
+        taskSectionViewPersonCollector = new ArrayList<>();
 
         actionBarController.setToolbarTitle(R.string.title_event_planner);
-        actionBarController.setToolbarAction(BitmapFactory.decodeResource(getResources(), R.mipmap.icon_add), () -> changeFragment(TaskFragment.newInstance()));
+        actionBarController.setToolbarAction(
+                BitmapFactory.decodeResource(getResources(), R.mipmap.icon_add),
+                () -> changeFragment(TaskFragment.newInstance(groupConversation, UserInfoProvider.getCurrentUser(), TaskFragment.TaskAction.CREATE))
+        );
 
         container = getViewElement(getView(), R.id.event_planner_container);
 

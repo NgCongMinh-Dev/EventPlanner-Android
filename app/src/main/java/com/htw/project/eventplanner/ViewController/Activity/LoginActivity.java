@@ -8,12 +8,21 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.htw.project.eventplanner.BuildConfig;
+import com.htw.project.eventplanner.Business.EventBusiness;
+import com.htw.project.eventplanner.Business.GroupConversationBusiness;
+import com.htw.project.eventplanner.Model.Event;
+import com.htw.project.eventplanner.Model.GroupConversation;
 import com.htw.project.eventplanner.R;
+import com.htw.project.eventplanner.Rest.ApiCallback;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private GroupConversationBusiness gcBusiness;
+
     private EditText usernameEditText;
-    private EditText passwordEditText;
+    private EditText firstNameEditText;
+    private EditText lastNameEditText;
     private Button loginButton;
 
     @Override
@@ -23,23 +32,33 @@ public class LoginActivity extends AppCompatActivity {
         setTitle(R.string.title_activity_login);
         setContentView(R.layout.activity_login);
 
+        gcBusiness = new GroupConversationBusiness();
+
         bindView();
     }
 
     private void bindView() {
         usernameEditText = findViewById(R.id.username);
-        passwordEditText = findViewById(R.id.password);
+        firstNameEditText = findViewById(R.id.firstName);
+        lastNameEditText = findViewById(R.id.lastName);
         loginButton = findViewById(R.id.login);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
+        loginButton.setOnClickListener(v -> {
+            String username = usernameEditText.getText().toString();
+            String firstName = firstNameEditText.getText().toString();
+            String lastName = lastNameEditText.getText().toString();
 
-                System.err.println(username + " " + password);
-                switchToMainActivity();
-            }
+            gcBusiness.joinRoom(username, firstName, lastName, new ApiCallback() {
+                @Override
+                public void onSuccess(Object response) {
+                    switchToMainActivity();
+                }
+
+                @Override
+                public void onError(String message) {
+                    // TODO error
+                }
+            });
         });
     }
 

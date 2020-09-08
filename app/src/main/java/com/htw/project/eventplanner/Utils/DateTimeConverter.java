@@ -9,14 +9,14 @@ public final class DateTimeConverter {
 
     public static final String DATE_FORMAT = "dd.MM.yyyy";
 
-    private static final SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT, Locale.GERMAN);
+    public static final SimpleDateFormat FORMATTER = new SimpleDateFormat(DATE_FORMAT, Locale.GERMAN);
 
     private DateTimeConverter() {
     }
 
     public static Date getDate(String value) {
         try {
-            return formatter.parse(value);
+            return FORMATTER.parse(value);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -24,7 +24,7 @@ public final class DateTimeConverter {
     }
 
     public static String getDate(Date date) {
-        return formatter.format(date);
+        return FORMATTER.format(date);
     }
 
 }
