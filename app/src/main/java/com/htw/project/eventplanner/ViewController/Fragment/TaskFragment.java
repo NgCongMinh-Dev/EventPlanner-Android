@@ -6,13 +6,17 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.htw.project.eventplanner.Business.TaskBusiness;
 import com.htw.project.eventplanner.Model.GroupConversation;
+import com.htw.project.eventplanner.Model.Task;
 import com.htw.project.eventplanner.Model.User;
 import com.htw.project.eventplanner.R;
+import com.htw.project.eventplanner.Rest.ApiCallback;
 import com.htw.project.eventplanner.Utils.DateTimeConverter;
 import com.htw.project.eventplanner.ViewController.Controller.AssignUserDialog;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,6 +61,10 @@ public class TaskFragment extends AbstractFragment {
     private TextInputEditText taskPersonsEditText;
     private TextInputEditText taskDateEditText;
 
+    // variables hold value for request
+    private List<User> assignees;
+    private Date dueDate;
+
     @Override
     protected int getLayoutResourceId() {
         return R.layout.fragment_task;
@@ -68,8 +76,10 @@ public class TaskFragment extends AbstractFragment {
 
         // action bar
         actionBarController.setToolbarTitle(R.string.title_task_add);
-        actionBarController.setToolbarAction(BitmapFactory.decodeResource(getResources(), R.mipmap.icon_check), () -> {
-        });
+        actionBarController.setToolbarAction(
+                BitmapFactory.decodeResource(getResources(), R.mipmap.icon_check),
+                this::createTask
+        );
 
         // initialize
         groupConversation = getArguments().getParcelable(BUNDLE_ARG_GROUP_CONVERSATION);
@@ -84,6 +94,8 @@ public class TaskFragment extends AbstractFragment {
         // assignee check box
         taskPersonsEditText.setOnClickListener(view -> {
             new AssignUserDialog(getContext(), groupConversation, users -> {
+                assignees = users;
+
                 List<String> fullNames = users.stream().map(user -> user.getFullName()).collect(Collectors.toList());
                 String text = TextUtils.join(", ", fullNames);
                 taskPersonsEditText.setText(text);
@@ -97,7 +109,9 @@ public class TaskFragment extends AbstractFragment {
             calendar.set(Calendar.MONTH, monthOfYear);
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-            taskDateEditText.setText(DateTimeConverter.getDate(calendar.getTime()));
+            dueDate = calendar.getTime();
+
+            taskDateEditText.setText(DateTimeConverter.getDate(dueDate));
         };
 
         taskDateEditText.setOnClickListener(view -> {
@@ -108,6 +122,27 @@ public class TaskFragment extends AbstractFragment {
                     calendar.get(Calendar.MONTH),
                     calendar.get(Calendar.DAY_OF_MONTH)
             ).show();
+        });
+    }
+
+    private void createTask() {
+        Task task = new Task();
+        task.setTitle(taskTitleEditText.getText().toString());
+        task.setDescription(taskDescriptionEditText.getText().toString());
+        task.setStatus(Task.Status.PENDING);
+        task.setAssignees(assignees);
+        task.setDueDate(dueDate);
+
+        new TaskBusiness().createTask(task, groupConversation.getEvent(), new ApiCallback() {
+            @Override
+            public void onSuccess(Object response) {
+                returnToPreviousFragment();
+            }
+
+            @Override
+            public void onError(String message) {
+
+            }
         });
     }
 

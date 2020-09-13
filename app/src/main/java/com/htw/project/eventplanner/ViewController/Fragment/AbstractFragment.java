@@ -52,6 +52,10 @@ public abstract class AbstractFragment extends Fragment {
         fragmentChangeListener.pushFragment(fragment);
     }
 
+    protected void returnToPreviousFragment() {
+        fragmentChangeListener.popCurrentFragment();
+    }
+
     protected <T> T getViewElement(final View parentView, final int childId) {
         return (T) parentView.findViewById(childId);
     }

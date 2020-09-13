@@ -6,4 +6,6 @@ public interface FragmentChangeListener {
 
     void pushFragment(AbstractFragment fragment);
 
+    void popCurrentFragment();
+
 }

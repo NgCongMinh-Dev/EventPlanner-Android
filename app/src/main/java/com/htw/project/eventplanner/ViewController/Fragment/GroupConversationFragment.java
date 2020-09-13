@@ -77,9 +77,10 @@ public class GroupConversationFragment extends AbstractFragment {
     }
 
     private void openEventPlannerView(View view) {
-        gcBusiness.getEvent(gc.getId(), new ApiCallback<Event>() {
+        gcBusiness.getEvent(gc, new ApiCallback<Event>() {
             @Override
             public void onSuccess(Event event) {
+                gc.setEvent(event);
                 changeFragment(EventPlannerFragment.newInstance(gc, event));
             }
 

@@ -14,6 +14,9 @@ public class Event implements Parcelable {
 
     private List<Task> tasks;
 
+    public Event() {
+    }
+
     public Long getId() {
         return id;
     }

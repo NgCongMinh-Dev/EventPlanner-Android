@@ -52,6 +52,12 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
     }
 
     @Override
+    public void popCurrentFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack();
+    }
+
+    @Override
     public ActionBarController getActionBarController() {
         return actionBarController;
     }

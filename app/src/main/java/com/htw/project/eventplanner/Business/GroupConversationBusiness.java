@@ -25,7 +25,7 @@ public class GroupConversationBusiness extends ApiBusiness {
     public void getGroupConversation(int id, ApiCallback<GroupConversation> callback) {
         JsonAdapter<GroupConversation> jsonAdapter = getAdapter(GroupConversation.class);
 
-        Request request = buildGetRequest(BuildConfig.BACKEND_BASE_URL, "/cg/" + id);
+        Request request = buildGetRequest(BuildConfig.BACKEND_BASE_URL, "/gc/" + id);
 
         getApiClient().newCall(request).enqueue(new Callback() {
             @Override
@@ -62,7 +62,7 @@ public class GroupConversationBusiness extends ApiBusiness {
         JsonAdapter<User> jsonAdapter = getAdapter(User.class);
         RequestBody requestBody = RequestBody.create(MEDIA_TYPE_JSON, jsonAdapter.toJson(user));
 
-        Request request = buildPostRequest(BuildConfig.BACKEND_BASE_URL, "/cg/" + BuildConfig.GROUP_CONVERSATION_ID + "/users", requestBody);
+        Request request = buildPostRequest(BuildConfig.BACKEND_BASE_URL, "/users/join?groupChat=" + BuildConfig.GROUP_CONVERSATION_ID, requestBody);
 
         getApiClient().newCall(request).enqueue(new Callback() {
             @Override
@@ -90,10 +90,24 @@ public class GroupConversationBusiness extends ApiBusiness {
         });
     }
 
-    public void getEvent(Long groupConversationId, ApiCallback<Event> callback) {
+    public void getEvent(GroupConversation gc, ApiCallback<Event> callback) {
         JsonAdapter<Event> jsonAdapter = getAdapter(Event.class);
 
-        Request request = buildGetRequest(BuildConfig.BACKEND_BASE_URL, "/cg/" + groupConversationId + "/events");
+        Request request;
+
+        Event event = gc.getEvent();
+        if (event == null || event.getId() == null) {
+            // create new event
+            event = new Event();
+            event.setName(gc.getTitle());
+
+            RequestBody requestBody = RequestBody.create(MEDIA_TYPE_JSON, jsonAdapter.toJson(event));
+            request = buildPostRequest(BuildConfig.BACKEND_BASE_URL, "/events/new?groupChat=" + gc.getId(), requestBody);
+        } else {
+            // get existing event
+            request = buildGetRequest(BuildConfig.BACKEND_BASE_URL, "/events/" + event.getId());
+        }
+
 
         getApiClient().newCall(request).enqueue(new Callback() {
             @Override
