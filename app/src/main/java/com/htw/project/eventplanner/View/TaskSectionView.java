@@ -27,6 +27,8 @@ public class TaskSectionView extends LinearLayout {
 
     private TextView headerTitle;
 
+    private ImageButton headerExpandIcon;
+
     private RecyclerView taskContainer;
 
     public TaskSectionView(Context context) {
@@ -64,7 +66,6 @@ public class TaskSectionView extends LinearLayout {
         // section header - title
         headerTitle = new TextView(headerContainer.getContext());
         headerTitle.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        headerTitle.setText("Section");
         headerTitle.setTextColor(getResources().getColor(R.color.black));
         headerTitle.setTextSize(20);
         headerTitle.setTypeface(headerTitle.getTypeface(), Typeface.BOLD);
@@ -74,11 +75,12 @@ public class TaskSectionView extends LinearLayout {
         iconExpandLess = BitmapFactory.decodeResource(getResources(), R.mipmap.icon_expand_less);
         iconExpandMore = BitmapFactory.decodeResource(getResources(), R.mipmap.icon_expand_more);
 
-        ImageButton headerExpandIcon = new ImageButton(headerContainer.getContext());
+        headerExpandIcon = new ImageButton(headerContainer.getContext());
         headerExpandIcon.setLayoutParams(new LayoutParams(ViewScaleConverter.toDP(getContext(), 30), ViewScaleConverter.toDP(getContext(), 30)));
         headerExpandIcon.setLeft(ViewScaleConverter.toDP(getContext(), 10));
         headerExpandIcon.setBackgroundColor(getResources().getColor(R.color.grey));
         headerExpandIcon.setImageBitmap(iconExpandMore);
+        headerExpandIcon.setVisibility(GONE);
         headerExpandIcon.setOnClickListener(view -> {
             if (taskContainer.getVisibility() == VISIBLE) {
                 taskContainer.setVisibility(GONE);
@@ -106,8 +108,13 @@ public class TaskSectionView extends LinearLayout {
         addView(taskContainer);
     }
 
-    public RecyclerView getTaskContainer() {
-        return taskContainer;
+    public void setRecyclerViewAdapter(RecyclerView.Adapter adapter) {
+        taskContainer.setAdapter(adapter);
+
+        // show expand icon only if there are items
+        if (adapter.getItemCount() > 0) {
+            headerExpandIcon.setVisibility(VISIBLE);
+        }
     }
 
     public void setSectionTitle(int resId) {

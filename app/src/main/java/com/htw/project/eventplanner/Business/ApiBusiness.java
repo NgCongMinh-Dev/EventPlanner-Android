@@ -15,7 +15,7 @@ public abstract class ApiBusiness {
     protected final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
 
     protected enum HttpMethod {
-        POST, PUT, DELETE, GET;
+        POST, PUT, PATCH, DELETE, GET;
     }
 
     protected OkHttpClient getApiClient() {
@@ -32,6 +32,9 @@ public abstract class ApiBusiness {
                 break;
             case PUT:
                 builder.put(body);
+                break;
+            case PATCH:
+                builder.patch(body);
                 break;
             case DELETE:
                 builder.delete();
@@ -54,6 +57,10 @@ public abstract class ApiBusiness {
 
     protected Request buildPutRequest(String server, String url, RequestBody body) {
         return buildRequest(server, url, body, HttpMethod.PUT);
+    }
+
+    protected Request buildPatchRequest(String server, String url, RequestBody body) {
+        return buildRequest(server, url, body, HttpMethod.PATCH);
     }
 
     protected Request buildDeleteRequest(String server, String url) {

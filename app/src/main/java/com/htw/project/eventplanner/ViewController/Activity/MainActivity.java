@@ -1,11 +1,11 @@
 package com.htw.project.eventplanner.ViewController.Activity;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
-import android.os.Bundle;
 
 import com.htw.project.eventplanner.R;
 import com.htw.project.eventplanner.ViewController.ActionbarProvider;
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
         openInitFragment();
     }
 
-    private void initComponents(){
+    private void initComponents() {
         // actionbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements FragmentChangeLis
         actionBarController = new ActionBarController(toolbar);
     }
 
-    private void openInitFragment(){
+    private void openInitFragment() {
         pushFragment(GroupConversationFragment.newInstance());
     }
 

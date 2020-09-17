@@ -1,5 +1,6 @@
 package com.htw.project.eventplanner.Business;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -38,7 +39,7 @@ public class GroupConversationBusiness extends ApiBusiness {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    // TODO error
+                    callback.onError("Failed to fetch group conversation.");
                     return;
                 }
 
@@ -46,18 +47,15 @@ public class GroupConversationBusiness extends ApiBusiness {
 
                 new Handler(Looper.getMainLooper()).post(() -> {
                     callback.onSuccess(groupConversation);
+                    response.close();
                 });
-
-                response.close();
             }
         });
     }
 
-    public void joinRoom(String username, String firstName, String lastName, ApiCallback callback) {
+    public void joinRoom(String username, ApiCallback callback) {
         User user = new User();
         user.setUsername(username);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
 
         JsonAdapter<User> jsonAdapter = getAdapter(User.class);
         RequestBody requestBody = RequestBody.create(MEDIA_TYPE_JSON, jsonAdapter.toJson(user));
@@ -75,17 +73,18 @@ public class GroupConversationBusiness extends ApiBusiness {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    // TODO error
+                    callback.onError("Failed to join room.");
                     return;
                 }
 
-                UserInfoProvider.setCurrentUser(user);
+                String json = response.body().string();
+                User responseUser = jsonAdapter.fromJson(json);
+                UserInfoProvider.setCurrentUser(responseUser);
 
                 new Handler(Looper.getMainLooper()).post(() -> {
                     callback.onSuccess(null);
+                    response.close();
                 });
-
-                response.close();
             }
         });
     }
@@ -107,8 +106,6 @@ public class GroupConversationBusiness extends ApiBusiness {
             // get existing event
             request = buildGetRequest(BuildConfig.BACKEND_BASE_URL, "/events/" + event.getId());
         }
-
-
         getApiClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -120,7 +117,7 @@ public class GroupConversationBusiness extends ApiBusiness {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    // TODO error
+                    callback.onError("Failed to fetch event.");
                     return;
                 }
 
@@ -128,9 +125,8 @@ public class GroupConversationBusiness extends ApiBusiness {
 
                 new Handler(Looper.getMainLooper()).post(() -> {
                     callback.onSuccess(event);
+                    response.close();
                 });
-
-                response.close();
             }
         });
     }

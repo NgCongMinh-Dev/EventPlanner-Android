@@ -5,6 +5,10 @@ import android.os.Parcelable;
 
 public class User implements Parcelable {
 
+    public enum Role {
+        USER, ADMIN;
+    }
+
     private Long id;
 
     private String username;
@@ -13,7 +17,7 @@ public class User implements Parcelable {
 
     private String lastName;
 
-    private String role = "USER";
+    private Role role = Role.USER;
 
     public User() {
     }
@@ -50,8 +54,16 @@ public class User implements Parcelable {
         this.lastName = lastName;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public boolean isAdmin(){
+        return role == Role.ADMIN;
     }
 
     public String getFullName() {
@@ -67,7 +79,7 @@ public class User implements Parcelable {
         username = in.readString();
         firstName = in.readString();
         lastName = in.readString();
-        role = in.readString();
+        role = Role.values()[in.readInt()];
     }
 
     @Override
@@ -86,7 +98,7 @@ public class User implements Parcelable {
         dest.writeString(username);
         dest.writeString(firstName);
         dest.writeString(lastName);
-        dest.writeString(role);
+        dest.writeInt(role.ordinal());
     }
 
     @SuppressWarnings("unused")

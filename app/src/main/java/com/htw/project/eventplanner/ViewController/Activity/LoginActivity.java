@@ -2,27 +2,21 @@ package com.htw.project.eventplanner.ViewController.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.htw.project.eventplanner.BuildConfig;
-import com.htw.project.eventplanner.Business.EventBusiness;
 import com.htw.project.eventplanner.Business.GroupConversationBusiness;
-import com.htw.project.eventplanner.Model.Event;
-import com.htw.project.eventplanner.Model.GroupConversation;
 import com.htw.project.eventplanner.R;
 import com.htw.project.eventplanner.Rest.ApiCallback;
+import com.htw.project.eventplanner.ViewController.Controller.ErrorDialog;
 
 public class LoginActivity extends AppCompatActivity {
 
     private GroupConversationBusiness gcBusiness;
 
     private EditText usernameEditText;
-    private EditText firstNameEditText;
-    private EditText lastNameEditText;
     private Button loginButton;
 
     @Override
@@ -39,16 +33,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private void bindView() {
         usernameEditText = findViewById(R.id.username);
-        firstNameEditText = findViewById(R.id.firstName);
-        lastNameEditText = findViewById(R.id.lastName);
         loginButton = findViewById(R.id.login);
 
         loginButton.setOnClickListener(v -> {
             String username = usernameEditText.getText().toString();
-            String firstName = firstNameEditText.getText().toString();
-            String lastName = lastNameEditText.getText().toString();
-
-            gcBusiness.joinRoom(username, firstName, lastName, new ApiCallback() {
+            gcBusiness.joinRoom(username, new ApiCallback() {
                 @Override
                 public void onSuccess(Object response) {
                     switchToMainActivity();
@@ -56,13 +45,17 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onError(String message) {
-                    // TODO error
+                    runOnUiThread(() -> {
+                        System.err.println(message);
+                        new ErrorDialog(LoginActivity.this).show();
+                    });
+
                 }
             });
         });
     }
 
-    private void switchToMainActivity(){
+    private void switchToMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

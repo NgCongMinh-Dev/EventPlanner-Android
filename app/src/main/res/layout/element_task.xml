@@ -19,13 +19,13 @@
             android:layout_height="30dp"
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
-            android:background="@mipmap/icon_check"
             android:foreground="@drawable/border_black_round"
             android:gravity="center"
             android:orientation="horizontal" />
 
         <!-- information section -->
         <LinearLayout
+            android:id="@+id/element_task_info_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"

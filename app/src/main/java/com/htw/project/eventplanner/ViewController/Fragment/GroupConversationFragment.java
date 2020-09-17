@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.htw.project.eventplanner.BuildConfig;
 import com.htw.project.eventplanner.Business.GroupConversationBusiness;
-import com.htw.project.eventplanner.Model.Event;
 import com.htw.project.eventplanner.Model.GroupConversation;
 import com.htw.project.eventplanner.R;
 import com.htw.project.eventplanner.Rest.ApiCallback;
+import com.htw.project.eventplanner.ViewController.Controller.ErrorDialog;
 import com.htw.project.eventplanner.ViewController.Element.ParticipantAdapter;
 
 public class GroupConversationFragment extends AbstractFragment {
@@ -48,13 +48,15 @@ public class GroupConversationFragment extends AbstractFragment {
 
             @Override
             public void onError(String message) {
-
+                getActivity().runOnUiThread(() -> {
+                    System.err.println(message);
+                    new ErrorDialog(getContext()).show();
+                });
             }
         });
 
         // actionbar
         actionBarController.setToolbarTitle(R.string.title_conversation_group_detail);
-
     }
 
     private void initComponents() {
@@ -68,27 +70,12 @@ public class GroupConversationFragment extends AbstractFragment {
 
         // event planner action
         View eventPlannerView = getViewElement(getView(), R.id.group_info_action_event_planner);
-        eventPlannerView.setOnClickListener(this::openEventPlannerView);
+        eventPlannerView.setOnClickListener(view -> changeFragment(EventPlannerFragment.newInstance(gc)));
 
         // participants
         RecyclerView participantContainer = getViewElement(getView(), R.id.group_info_participant_container);
         participantContainer.setLayoutManager(new LinearLayoutManager(getContext()));
         participantContainer.setAdapter(new ParticipantAdapter(getContext(), gc.getParticipants()));
-    }
-
-    private void openEventPlannerView(View view) {
-        gcBusiness.getEvent(gc, new ApiCallback<Event>() {
-            @Override
-            public void onSuccess(Event event) {
-                gc.setEvent(event);
-                changeFragment(EventPlannerFragment.newInstance(gc, event));
-            }
-
-            @Override
-            public void onError(String message) {
-
-            }
-        });
     }
 
 }

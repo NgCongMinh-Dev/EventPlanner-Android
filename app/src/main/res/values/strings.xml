@@ -1,22 +1,36 @@
 <resources>
     <string name="app_name">EventPlanner</string>
 
+    <!-- Login -->
     <string name="title_activity_login">Login</string>
-    <string name="login_form_hint_username">E-Mail</string>
-    <string name="login_form_hint_first_name">First Name</string>
-    <string name="login_form_hint_last_name">Last Name</string>
-    <string name="action_login">Login</string>
+    <string name="login_form_hint_username">Username</string>
+    <string name="login_form_action_join">Join</string>
 
     <string name="welcome">"Welcome !"</string>
 
     <!-- fragment title -->
     <string name="title_conversation_group_detail">Group Info</string>
     <string name="title_event_planner">Event Planner</string>
-    <string name="title_task_add">Add Task</string>
-    <string name="title_task_update">Update Task</string>
 
     <!-- task fragment -->
+    <string name="title_task_add">Add Task</string>
+    <string name="title_task_update">Update Task</string>
+    <string name="title_task_view">Task</string>
     <string name="task_dialog_button_cancel">Cancel</string>
     <string name="task_dialog_button_approve">Ok</string>
+    <string name="task_section_status_pending">PENDING</string>
+    <string name="task_section_status_finished">FINISHED</string>
+    <string name="task_section_user_unassigned">Unassigned</string>
+    <string name="task_form_button_delete">Delete Task</string>
+    <string name="task_form_delete_dialog_title">Delete the Task</string>
+    <string name="task_form_delete_dialog_description">Are you sure you want to delete the task?</string>
+
+    <!-- dialog -->
+    <string name="dialog_conformation_confirm">Confirm</string>
+    <string name="dialog_conformation_cancel">Cancel</string>
+    <string name="dialog_error_title">Error</string>
+    <string name="dialog_error_description">Something went wrong. Please try again another time.</string>
+    <string name="dialog_error_confirm">Ok</string>
+
 
 </resources>

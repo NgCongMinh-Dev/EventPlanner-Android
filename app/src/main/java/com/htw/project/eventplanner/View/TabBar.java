@@ -93,6 +93,14 @@ public class TabBar extends LinearLayout {
         activeTabIndex = index;
     }
 
+    @Override
+    public void removeAllViews() {
+        super.removeAllViews();
+
+        elements = new HashMap<>();
+        activeTabIndex = 0;
+    }
+
     @SuppressLint("AppCompatCustomView")
     public static class TabBarElement extends ImageButton {
 

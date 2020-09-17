@@ -4,37 +4,35 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import androidx.recyclerview.widget.RecyclerView;
-
+import com.htw.project.eventplanner.Business.EventBusiness;
+import com.htw.project.eventplanner.Business.GroupConversationBusiness;
+import com.htw.project.eventplanner.Business.TaskBusiness;
 import com.htw.project.eventplanner.Business.UserInfoProvider;
 import com.htw.project.eventplanner.Model.Event;
 import com.htw.project.eventplanner.Model.GroupConversation;
 import com.htw.project.eventplanner.Model.Task;
 import com.htw.project.eventplanner.Model.TaskSection;
+import com.htw.project.eventplanner.Model.User;
 import com.htw.project.eventplanner.R;
-import com.htw.project.eventplanner.Utils.DateTimeConverter;
+import com.htw.project.eventplanner.Rest.ApiCallback;
 import com.htw.project.eventplanner.Utils.ViewScaleConverter;
 import com.htw.project.eventplanner.View.ProgressBar;
 import com.htw.project.eventplanner.View.TabBar;
 import com.htw.project.eventplanner.View.TaskSectionView;
+import com.htw.project.eventplanner.ViewController.Controller.ErrorDialog;
 import com.htw.project.eventplanner.ViewController.Element.TaskViewAdapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class EventPlannerFragment extends AbstractFragment {
 
     private static final String BUNDLE_ARG_GROUP_CONVERSATION = "bundle_arg_group_conversation";
-    private static final String BUNDLE_ARG_EVENT = "bundle_arg_event";
 
-    public static EventPlannerFragment newInstance(GroupConversation groupConversation, Event event) {
+    public static EventPlannerFragment newInstance(GroupConversation groupConversation) {
         Bundle args = new Bundle();
         args.putParcelable(BUNDLE_ARG_GROUP_CONVERSATION, groupConversation);
-        args.putParcelable(BUNDLE_ARG_EVENT, event);
 
         EventPlannerFragment fragment = new EventPlannerFragment();
         fragment.setArguments(args);
@@ -43,6 +41,10 @@ public class EventPlannerFragment extends AbstractFragment {
 
     private GroupConversation groupConversation;
     private Event event;
+    private User currentUser;
+
+    private GroupConversationBusiness gcBusiness;
+    private TaskBusiness taskBusiness;
 
     private LinearLayout container;
     private List<TaskSectionView> taskSectionViewListCollector;
@@ -60,61 +62,150 @@ public class EventPlannerFragment extends AbstractFragment {
         // initialize
         Bundle bundle = getArguments();
         groupConversation = bundle.getParcelable(BUNDLE_ARG_GROUP_CONVERSATION);
-        event = bundle.getParcelable(BUNDLE_ARG_EVENT);
+        event = groupConversation.getEvent();
+        currentUser = UserInfoProvider.getCurrentUser();
 
+        gcBusiness = new GroupConversationBusiness();
+        taskBusiness = new TaskBusiness();
+
+        initTaskContainer();
+    }
+
+    private void initTaskContainer() {
+        gcBusiness.getEvent(groupConversation, new ApiCallback<Event>() {
+            @Override
+            public void onSuccess(Event result) {
+                event = result;
+                groupConversation.setEvent(event);
+
+                initComponents();
+            }
+
+            @Override
+            public void onError(String message) {
+                getActivity().runOnUiThread(() -> {
+                    System.err.println(message);
+                    new ErrorDialog(getContext()).show();
+                });
+            }
+        });
+    }
+
+    private void initComponents() {
+        container = getViewElement(getView(), R.id.event_planner_container);
+
+        initActionBar();
+        initProgressbar();
+        initTaskSection();
+        initTabBar();
+    }
+
+    private void initActionBar() {
+        actionBarController.setToolbarTitle(R.string.title_event_planner);
+
+        if (currentUser.getRole() == User.Role.ADMIN) {
+            actionBarController.setToolbarAction(
+                    BitmapFactory.decodeResource(getResources(), R.mipmap.icon_add),
+                    () -> changeFragment(TaskFragment.newInstance(groupConversation))
+            );
+        }
+    }
+
+    private void initProgressbar() {
+        EventBusiness business = new EventBusiness();
+
+        ProgressBar progressBar = new ProgressBar(getContext());
+        progressBar.setProgress(business.getEventPercentage(event));
+
+        container.addView(progressBar);
+    }
+
+    private void initTaskSection() {
         taskSectionViewListCollector = new ArrayList<>();
         taskSectionViewPersonCollector = new ArrayList<>();
 
-        actionBarController.setToolbarTitle(R.string.title_event_planner);
-        actionBarController.setToolbarAction(
-                BitmapFactory.decodeResource(getResources(), R.mipmap.icon_add),
-                () -> changeFragment(TaskFragment.newInstance(groupConversation, UserInfoProvider.getCurrentUser(), TaskFragment.TaskAction.CREATE))
-        );
-
-        container = getViewElement(getView(), R.id.event_planner_container);
-
-        // progress bar
-        ProgressBar progressBar = createProgressbar();
-        container.addView(progressBar);
-
-        // task section
-        Arrays.asList(testDataList()).stream().forEach(taskSection -> {
+        taskBusiness.getTasksSortedByStatus(event).stream().forEach(taskSection -> {
             TaskSectionView taskSectionView = createTaskSection(taskSection);
             taskSectionViewListCollector.add(taskSectionView);
 
             container.addView(taskSectionView);
         });
 
-        Arrays.asList(testDataPerson()).stream().forEach(taskSection -> {
+        taskBusiness.getTasksSortedByAssignee(groupConversation, event).stream().forEach(taskSection -> {
             TaskSectionView taskSectionView = createTaskSection(taskSection);
             taskSectionViewPersonCollector.add(taskSectionView);
-
         });
-
-        // tab bar
-        initTabBar();
-    }
-
-    private ProgressBar createProgressbar() {
-        ProgressBar progressBar = new ProgressBar(getContext());
-        progressBar.setProgress(75f);
-        return progressBar;
     }
 
     private TaskSectionView createTaskSection(TaskSection taskSection) {
-        TaskViewAdapter adapter = new TaskViewAdapter(getContext(), taskSection);
-        adapter.setOnClickListener(view -> Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show());
+        TaskViewAdapter adapter = new TaskViewAdapter(
+                getContext(),
+                taskSection,
+                this::handleTaskOnClick,
+                this::handleTaskStatusChanged);
 
         TaskSectionView taskSectionView = new TaskSectionView(getContext());
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) taskSectionView.getLayoutParams();
         params.setMargins(0, ViewScaleConverter.toDP(getContext(), 20), 0, 0);
         taskSectionView.setLayoutParams(params);
-        taskSectionView.setSectionTitle(taskSection.getSectionTitle());
+        taskSectionView.setRecyclerViewAdapter(adapter);
 
-        RecyclerView sectionOneView = taskSectionView.getTaskContainer();
-        sectionOneView.setAdapter(adapter);
+        Object title = taskSection.getSectionTitle();
+        if (title instanceof Integer) {
+            taskSectionView.setSectionTitle((Integer) title);
+        } else if (title instanceof String) {
+            taskSectionView.setSectionTitle((String) title);
+        }
 
         return taskSectionView;
+    }
+
+    private void resetFragmentView() {
+        // remove all views in task container
+        container.removeAllViews();
+
+        // remove all views in tab bar container
+        TabBar tabBar = getViewElement(getView(), R.id.tab_container);
+        tabBar.removeAllViews();
+    }
+
+    private void handleTaskOnClick(Task task) {
+        switch (task.getStatus()) {
+            case PENDING:
+                // admin can update/delete task
+                // user can only view task
+                changeFragment(TaskFragment.newInstance(
+                        groupConversation,
+                        task,
+                        currentUser.isAdmin() ? TaskFragment.TaskAction.UPDATE : TaskFragment.TaskAction.VIEW)
+                );
+                break;
+            case FINISHED:
+                // all user can only view task
+                changeFragment(TaskFragment.newInstance(groupConversation, task, TaskFragment.TaskAction.VIEW));
+                break;
+        }
+    }
+
+    private void handleTaskStatusChanged(Task.Status status, Task task) {
+        // only admin and assignee can change the status of the task
+        if (currentUser.isAdmin() || taskBusiness.isAssignee(task, currentUser)) {
+            taskBusiness.changeTaskStatus(status, task, new ApiCallback<Task>() {
+                @Override
+                public void onSuccess(Task response) {
+                    resetFragmentView();
+                    initTaskContainer();
+                }
+
+                @Override
+                public void onError(String message) {
+                    getActivity().runOnUiThread(() -> {
+                        System.err.println(message);
+                        new ErrorDialog(getContext()).show();
+                    });
+                }
+            });
+        }
     }
 
     private void initTabBar() {
@@ -157,50 +248,6 @@ public class EventPlannerFragment extends AbstractFragment {
             }
         });
         tabBar.addView(taskPersonViewElement);
-    }
-
-    private TaskSection testDataList() {
-        Date date = DateTimeConverter.getDate("02.09.2020");
-
-        List<Task> tasks = new ArrayList<>();
-
-        Task task1 = new Task();
-        task1.setTitle("Einkaufen");
-        task1.setDueDate(date);
-        tasks.add(task1);
-
-        Task task2 = new Task();
-        task2.setTitle("Kochen");
-        task2.setDueDate(date);
-        tasks.add(task2);
-
-        TaskSection taskSection = new TaskSection();
-        taskSection.setSectionTitle("Pending");
-        taskSection.setTasks(tasks);
-
-        return taskSection;
-    }
-
-    private TaskSection testDataPerson() {
-        Date date = DateTimeConverter.getDate("02.09.2020");
-
-        List<Task> tasks = new ArrayList<>();
-
-        Task task1 = new Task();
-        task1.setTitle("Einkaufen");
-        task1.setDueDate(date);
-        tasks.add(task1);
-
-        Task task2 = new Task();
-        task2.setTitle("Kochen");
-        task2.setDueDate(date);
-        tasks.add(task2);
-
-        TaskSection taskSection = new TaskSection();
-        taskSection.setSectionTitle("Person");
-        taskSection.setTasks(tasks);
-
-        return taskSection;
     }
 
 }
