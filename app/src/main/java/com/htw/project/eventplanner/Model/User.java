@@ -2,6 +2,9 @@ package com.htw.project.eventplanner.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
+
+import java.util.Arrays;
 
 public class User implements Parcelable {
 
@@ -62,12 +65,12 @@ public class User implements Parcelable {
         this.role = role;
     }
 
-    public boolean isAdmin(){
+    public boolean isAdmin() {
         return role == Role.ADMIN;
     }
 
     public String getFullName() {
-        return getNameValue(firstName) + " " + getNameValue(lastName);
+        return TextUtils.join(" ", Arrays.asList(getNameValue(firstName), getNameValue(lastName)));
     }
 
     private String getNameValue(String name) {

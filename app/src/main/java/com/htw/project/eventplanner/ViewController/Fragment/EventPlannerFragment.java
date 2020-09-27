@@ -125,21 +125,22 @@ public class EventPlannerFragment extends AbstractFragment {
         taskSectionViewPersonCollector = new ArrayList<>();
 
         taskBusiness.getTasksSortedByStatus(event).stream().forEach(taskSection -> {
-            TaskSectionView taskSectionView = createTaskSection(taskSection);
+            TaskSectionView taskSectionView = createTaskSection(TaskViewAdapter.Type.STATUS_FILTERED, taskSection);
             taskSectionViewListCollector.add(taskSectionView);
 
             container.addView(taskSectionView);
         });
 
         taskBusiness.getTasksSortedByAssignee(groupConversation, event).stream().forEach(taskSection -> {
-            TaskSectionView taskSectionView = createTaskSection(taskSection);
+            TaskSectionView taskSectionView = createTaskSection(TaskViewAdapter.Type.USER_FILTERED, taskSection);
             taskSectionViewPersonCollector.add(taskSectionView);
         });
     }
 
-    private TaskSectionView createTaskSection(TaskSection taskSection) {
+    private TaskSectionView createTaskSection(TaskViewAdapter.Type type, TaskSection taskSection) {
         TaskViewAdapter adapter = new TaskViewAdapter(
                 getContext(),
+                type,
                 taskSection,
                 this::handleTaskOnClick,
                 this::handleTaskStatusChanged);
@@ -155,6 +156,10 @@ public class EventPlannerFragment extends AbstractFragment {
             taskSectionView.setSectionTitle((Integer) title);
         } else if (title instanceof String) {
             taskSectionView.setSectionTitle((String) title);
+        }
+
+        if (taskSection.isShowRatio()) {
+            taskSectionView.setTaskRatio(taskSection.getFinishedTasks(), taskSection.getTotalTasks());
         }
 
         return taskSectionView;

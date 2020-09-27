@@ -193,11 +193,9 @@ public class TaskBusiness extends ApiBusiness {
             } else {
                 // add to corresponding user task section
                 assignee.forEach(user -> {
-                            TaskSection t = map.get(user.getId());
-                            t.addTask(task);
-                        }
-
-                );
+                    TaskSection t = map.get(user.getId());
+                    t.addTask(task);
+                });
             }
         });
 
@@ -207,6 +205,7 @@ public class TaskBusiness extends ApiBusiness {
     private TaskSection createTaskSectionForUserArea(User user) {
         TaskSection taskSection = new TaskSection();
         taskSection.setSectionTitle(user.getFullName());
+        taskSection.setShowRatio(true);
         return taskSection;
     }
 

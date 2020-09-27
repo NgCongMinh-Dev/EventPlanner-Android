@@ -27,6 +27,8 @@ public class TaskSectionView extends LinearLayout {
 
     private TextView headerTitle;
 
+    private TextView headerTaskRatio;
+
     private ImageButton headerExpandIcon;
 
     private RecyclerView taskContainer;
@@ -70,6 +72,17 @@ public class TaskSectionView extends LinearLayout {
         headerTitle.setTextSize(20);
         headerTitle.setTypeface(headerTitle.getTypeface(), Typeface.BOLD);
         headerContainer.addView(headerTitle);
+
+        // ratio unfinished to total task
+        headerTaskRatio = new TextView(headerContainer.getContext());
+        LinearLayout.LayoutParams taskRatioParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        taskRatioParams.setMarginEnd(ViewScaleConverter.toDP(getContext(), 10));
+        headerTaskRatio.setLayoutParams(taskRatioParams);
+        headerTaskRatio.setTextColor(getResources().getColor(R.color.black));
+        headerTaskRatio.setTextSize(20);
+        headerTaskRatio.setTypeface(headerTitle.getTypeface(), Typeface.BOLD);
+        headerTaskRatio.setVisibility(GONE);
+        headerContainer.addView(headerTaskRatio);
 
         // section header - expand icon
         iconExpandLess = BitmapFactory.decodeResource(getResources(), R.mipmap.icon_expand_less);
@@ -123,6 +136,17 @@ public class TaskSectionView extends LinearLayout {
 
     public void setSectionTitle(String title) {
         headerTitle.setText(title);
+    }
+
+    public void setTaskRatio(int finishedTask, int totalTask) {
+        // there is no unfinished task
+        if (finishedTask == totalTask) {
+            return;
+        }
+
+        headerTaskRatio.setText(finishedTask + "/" + totalTask);
+        headerTaskRatio.setVisibility(VISIBLE);
+
     }
 
 }
