@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/tab_container"
@@ -16,7 +16,7 @@
             android:layout_weight="1"
             android:orientation="vertical" />
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <com.htw.project.eventplanner.View.TabBar
         android:id="@+id/tab_container"

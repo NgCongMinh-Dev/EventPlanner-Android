@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -117,7 +118,7 @@ public class TaskSectionView extends LinearLayout {
         taskContainer.setVisibility(GONE);
         taskContainer.setLayoutManager(new LinearLayoutManager(getContext()));
         taskContainer.setItemAnimator(new DefaultItemAnimator());
-        taskContainer.setNestedScrollingEnabled(false);
+        taskContainer.setOverScrollMode(View.OVER_SCROLL_NEVER);
         addView(taskContainer);
     }
 

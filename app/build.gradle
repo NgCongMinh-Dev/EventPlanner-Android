@@ -18,7 +18,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", FONTAWESOME_LOCATION, "\"fonts/fontawesome-webfont.ttf\""
-        buildConfigField "String", BACKEND_BASE_URL, "\"http://192.168.178.21:8080/api\""
+        buildConfigField "String", BACKEND_BASE_URL, "\"http://192.168.178.46:8080/api\""
         buildConfigField "int", GROUP_CONVERSATION_ID, "1"
     }
 
